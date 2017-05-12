@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "LocalCommunicationClient.h"
 #include "CommunicatonServer.h"
+//TODO Könnte man eleganter gestalten
+#include "Types.h"
 
 #include <qdatastream.h>
 
@@ -37,16 +39,17 @@ namespace RW{
             dataStream << Msg;
             quint64 size = m_Client->write(arr);
             if (size < arr.size())
-                m_Logger->warn("Uncomplete message was send to {}", Msg.identifier().toStdString());
+                m_Logger->warn("Uncomplete message was send to {}", (int)spdlog::sinks::FilterType::LocalCommunicationClient, Msg.identifier().toStdString());
 
             if (!m_Client->flush())
-                m_Logger->error("Message couldn't send to {}", Msg.identifier().toStdString());
+                m_Logger->error("Message couldn't send to {}", (int)spdlog::sinks::FilterType::LocalCommunicationClient, Msg.identifier().toStdString());
+
         }
 
         void LocalCommunicationClient::OnPrepareIncomingConnection()
         {
             connect(m_Client, SIGNAL(readyRead()), this, SLOT(OnExternalMessage()));
-            m_Logger->debug("LocalClient is connected");
+            m_Logger->debug("LocalClient is connected", (int)spdlog::sinks::FilterType::LocalCommunicationClient);
             m_Logger->flush();
         }
 
@@ -59,7 +62,7 @@ namespace RW{
             Message msg;
             QDataStream sizeStream(m_Client->readAll());
             sizeStream >> msg;
-
+            m_Logger->warn("Message was received {}", (int)spdlog::sinks::FilterType::LocalCommunicationClient, (int)msg.MessageID());
             emit NewMessage(msg);
         }
 
@@ -73,37 +76,37 @@ namespace RW{
             switch (Error)
             {
             case QLocalSocket::ConnectionRefusedError:
-                m_Logger->error("A LocalCommunicationServer socket error occoured: {}", "ConnectionRefusedError");
+                m_Logger->error("A LocalCommunicationServer socket error occoured: {}", (int)spdlog::sinks::FilterType::LocalCommunicationClient, "ConnectionRefusedError");
                 break;
             case QLocalSocket::PeerClosedError:
-                m_Logger->error("A LocalCommunicationServer socket error occoured: {}", "PeerClosedError");
+                m_Logger->error("A LocalCommunicationServer socket error occoured: {}", (int)spdlog::sinks::FilterType::LocalCommunicationClient, "PeerClosedError");
                 break;
             case QLocalSocket::ServerNotFoundError:
-                m_Logger->error("A LocalCommunicationServer socket error occoured: {}", "ServerNotFoundError");
+                m_Logger->error("A LocalCommunicationServer socket error occoured: {}", (int)spdlog::sinks::FilterType::LocalCommunicationClient, "ServerNotFoundError");
                 break;
             case QLocalSocket::SocketAccessError:
-                m_Logger->error("A LocalCommunicationServer socket error occoured: {}", "SocketAccessError");
+                m_Logger->error("A LocalCommunicationServer socket error occoured: {}", (int)spdlog::sinks::FilterType::LocalCommunicationClient, "SocketAccessError");
                 break;
             case QLocalSocket::SocketResourceError:
-                m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", "SocketResourceError");
+                m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", (int)spdlog::sinks::FilterType::LocalCommunicationClient, "SocketResourceError");
                 break;
             case QLocalSocket::SocketTimeoutError:
-                m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", "SocketTimeoutError");
+                m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", (int)spdlog::sinks::FilterType::LocalCommunicationClient, "SocketTimeoutError");
                 break;
             case QLocalSocket::DatagramTooLargeError:
-                m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", "DatagramTooLargeError");
+                m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", (int)spdlog::sinks::FilterType::LocalCommunicationClient, "DatagramTooLargeError");
                 break;
             case QLocalSocket::ConnectionError:
-                m_Logger->error("A LocalCommunicationServer socket error occoured: {}", "ConnectionError");
+                m_Logger->error("A LocalCommunicationServer socket error occoured: {}", (int)spdlog::sinks::FilterType::LocalCommunicationClient, "ConnectionError");
                 break;
             case QLocalSocket::UnsupportedSocketOperationError:
-                m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", "UnsupportedSocketOperationError");
+                m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", (int)spdlog::sinks::FilterType::LocalCommunicationClient, "UnsupportedSocketOperationError");
                 break;
             case QLocalSocket::UnknownSocketError:
-                m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", "UnknownSocketError");
+                m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", (int)spdlog::sinks::FilterType::LocalCommunicationClient, "UnknownSocketError");
                 break;
             case QLocalSocket::OperationError:
-                m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", "OperationError");
+                m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", (int)spdlog::sinks::FilterType::LocalCommunicationClient, "OperationError");
                 break;
             default:
                 break;
@@ -118,7 +121,7 @@ namespace RW{
         void LocalCommunicationClient::SendWelcome()
         {
             COM::Message msg;
-            QString uuid = COM::CommunicatonServer::GenUUID(COM::CommunicatonServer::TypeofServer::RemoteHiddenHelper).toString();
+            QString uuid = COM::Message::GenUUID(COM::TypeofServer::RemoteHiddenHelper).toString();
             msg.setIdentifier(uuid);
             msg.SetMessageID(COM::MessageDescription::EX_WELCOME);
             msg.SetIsExternal(false);

@@ -47,6 +47,7 @@ public:
 				IN_ToggleCl30Fast,
 				IN_ToggleCl30Slow,
 				EX_StartInactivityTimer,
+                EX_ProcessLogout,
 				EX_StopInactivityTimer,
                 IN_Notifier,
                 EX_ShowPopUp,

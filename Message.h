@@ -3,10 +3,20 @@
 #include "qobject.h"
 #include "MessageDescription.h"
 #include <QVariant>
-
+#include <QUuid>
 
 namespace RW{
 	namespace COM{
+        enum class TypeofServer
+        {
+            RemoteView,
+            RemoteApp,
+            RemoteService,
+            RemoteHiddenHelper,
+            ServiceTest,
+            NON
+        };
+
 		class REMOTECOMMUNICATIONLIBRARY_EXPORT Message:
 			public QObject
 		{
@@ -22,6 +32,10 @@ namespace RW{
             Q_PROPERTY(bool IsProcessed READ IsProcessed WRITE SetIsProcessed)
 
 		public:
+        public:
+
+            Q_ENUM(TypeofServer)
+
 			enum class ExecutionVariant
 			{
 				SET,
@@ -50,6 +64,7 @@ namespace RW{
 				ExecutionVariant ExcVariant,
 				QList<QVariant> ParameterListe,
                 bool IsExternal,
+                bool IsIsProcessed,
 				QObject* Parent = nullptr);
 
 			Message::Message(QString m_Identifier,
@@ -59,6 +74,7 @@ namespace RW{
 				QVariant Result,
 				bool Success,
                 bool IsExternal,
+                bool IsProcessed,
 				QObject* Parent);
 
 			~Message();
@@ -97,6 +113,9 @@ namespace RW{
 
             bool IsProcessed() const { return m_IsProcessed; }
             void SetIsProcessed(bool IsProcessed){ m_IsProcessed = IsProcessed; }
+
+            static QUuid GenUUID(TypeofServer ServerType);
+
 		signals:
 			void IndetifierChanged();
 		};

@@ -1,5 +1,7 @@
 #include "GlobalCommunicationServer.h"
 #include "GlobalCommunicationThread.h"
+//TODO Könnte man eleganter gestalten
+#include "Types.h"
 
 #include <qdatastream>
 namespace RW{
@@ -21,7 +23,7 @@ namespace RW{
 		{
 			if (!m_TcpServer->listen(QHostAddress::Any, m_Port))
 			{
-				m_Logger->error("TcpServer couldn't listen on port {}. ErrorString: {}, ErrorID: {}", m_Port, m_TcpServer->errorString().toStdString(), (qint8)m_TcpServer->serverError());
+                m_Logger->error("TcpServer couldn't listen on port {}. ErrorString: {}, ErrorID: {}", (int)spdlog::sinks::FilterType::GlobalCommunicationServer, m_Port, m_TcpServer->errorString().toStdString(), (qint8)m_TcpServer->serverError());
 				return false;
 			}
 			else
@@ -35,7 +37,7 @@ namespace RW{
 		{
 			QTcpSocket *socket = m_TcpServer->nextPendingConnection();
 			// We have a new connection
-			m_Logger->debug("A new client {} has connected ", socket->peerAddress().toString().toStdString());
+            m_Logger->debug("A new client {} has connected ", (int)spdlog::sinks::FilterType::GlobalCommunicationServer, socket->peerAddress().toString().toStdString());
 			
             // Every new connection will be run in a newly created thread
             GlobalCommunicationThread *thread = new GlobalCommunicationThread(socket, m_Logger, this);

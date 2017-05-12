@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "Message.h"
-
 #include <QDatastream>
 
 namespace RW{
@@ -16,12 +15,14 @@ namespace RW{
 			ExecutionVariant ExcVariant,
 			QList<QVariant> ParameterListe,
             bool IsExternal,
+            bool IsProcessed,
 			QObject* Parent) : QObject(Parent),
 			m_Identifier(Identifier),
 			m_MessageID(MessageID),
 			m_ExecutionVariant(ExcVariant),
 			m_ParameterListe(ParameterListe),
-            m_IsExternal(IsExternal)
+            m_IsExternal(IsExternal),
+            m_IsProcessed(IsProcessed)
 		{
 		}
 
@@ -32,6 +33,7 @@ namespace RW{
 			QVariant Result,
 			bool Success,
             bool IsExternal,
+            bool IsProcessed,
 			QObject* Parent) : QObject(Parent),
 			m_Identifier(Identifier),
 			m_MessageID(MessageID),
@@ -39,7 +41,8 @@ namespace RW{
 			m_ParameterListe(ParameterListe),
 			m_Result(Result),
 			m_Success(Success),
-            m_IsExternal(IsExternal)
+            m_IsExternal(IsExternal),
+            m_IsProcessed(IsProcessed)
 		{
 		}
 
@@ -57,6 +60,7 @@ namespace RW{
             m_Success = obj.m_Success;
             m_Result = obj.m_Result;
             m_IsExternal = obj.m_IsExternal;
+            m_IsProcessed = obj.m_IsProcessed;
 		}
 
 		Message& Message::operator = (const Message& other)
@@ -73,7 +77,8 @@ namespace RW{
         m_Identifier(other.m_Identifier),
         m_Success(other.m_Success),
         m_Result(other.m_Result),
-        m_IsExternal(other.m_IsExternal)
+        m_IsExternal(other.m_IsExternal),
+        m_IsProcessed(other.m_IsProcessed)
 		{
 		}
 
@@ -125,6 +130,7 @@ namespace RW{
 			out << dataStruct.m_Result;
 			out << dataStruct.m_Success;
             out << dataStruct.m_IsExternal;
+            out << dataStruct.m_IsProcessed;
 			out.commitTransaction();
 			return out;
 		}
@@ -137,6 +143,7 @@ namespace RW{
 			QVariant result;
 			bool success;
             bool isExternal;
+            bool isProcessed;
 			QString Identifier;
 
 			in >> Identifier;
@@ -146,6 +153,7 @@ namespace RW{
 			in >> result;
 			in >> success;
             in >> isExternal;
+            in >> isProcessed;
 
             dataStruct.m_Identifier = Identifier;
 			dataStruct.m_ParameterListe = parameterList;
@@ -154,8 +162,38 @@ namespace RW{
 			dataStruct.m_Success = success;
 			dataStruct.m_ExecutionVariant = var;
             dataStruct.m_IsExternal = isExternal;
+            dataStruct.m_IsProcessed = isProcessed;
 
 			return in;
 		}
+
+        QUuid Message::GenUUID(TypeofServer ServerType)
+        {
+            switch (ServerType)
+            {
+            case RW::COM::TypeofServer::RemoteView:
+                return QUuid("{00000000-1234-1234-1234-ABCDEF123456}");
+                break;
+            case RW::COM::TypeofServer::RemoteApp:
+                return QUuid("{00000001-1234-1234-1234-ABCDEF123456}");
+                break;
+            case RW::COM::TypeofServer::RemoteService:
+                return QUuid("{00000002-1234-1234-1234-ABCDEF123456}");
+                break;
+            case RW::COM::TypeofServer::RemoteHiddenHelper:
+                return QUuid("{00000003-1234-1234-1234-ABCDEF123456}");
+                break;
+            case RW::COM::TypeofServer::ServiceTest:
+                return QUuid("{00000004-1234-1234-1234-ABCDEF123456}");
+                break;
+            case RW::COM::TypeofServer::NON:
+                return QUuid("{0000000A-1234-1234-1234-ABCDEF123456}");
+                break;
+            default:
+                return QUuid().toString();
+                break;
+
+            }
+        }
 	}
 }

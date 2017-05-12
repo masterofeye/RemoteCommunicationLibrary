@@ -2,6 +2,8 @@
 #include <QLocalSocket>
 #include <QDataStream>
 #include <qmetaobject.h>
+//TODO Könnte man eleganter gestalten
+#include "Types.h"
 
 namespace RW{
 	namespace COM{
@@ -32,24 +34,24 @@ namespace RW{
 		{
 			if (m_LocalComObj->listen(m_ServerName))
 			{
-				m_Logger->debug("LocalCommunicationServer is started on ChannelName {}", m_ServerName.toStdString());
+                m_Logger->debug("LocalCommunicationServer is started on ChannelName {}", (int)spdlog::sinks::FilterType::LocalCommunicationServer, m_ServerName.toStdString());
 				return true;
 			}
 			else
 			{
-				m_Logger->error("Can't start local server on ChannelName {}", m_ServerName.toStdString());
+                m_Logger->error("Can't start local server on ChannelName {}", (int)spdlog::sinks::FilterType::LocalCommunicationServer, m_ServerName.toStdString());
 				return false;
 			}
 		}
 
 		void LocalCommunicationServer::OnPrepareIncomingConnection()
 		{
-
             QLocalSocket* socket = m_LocalComObj->nextPendingConnection();
+            m_Logger->trace("A new client try to connect");
 
 			if (socket->isValid())
 			{
-				m_Logger->debug("A new client is connected to the LocalCommunicationServer {}", socket->serverName().toStdString());
+                m_Logger->debug("A new client is connected to the LocalCommunicationServer: {}", (int)spdlog::sinks::FilterType::LocalCommunicationServer, socket->serverName().toStdString());
 
 				connect(socket, SIGNAL(disconnected()), this, SLOT(OnSocketDisconnected()));
 				connect(socket, SIGNAL(readyRead()), this, SLOT(OnExternalMessage()));
@@ -65,7 +67,7 @@ namespace RW{
 			{
 				if (LocalSocket == i.value())
 				{
-					m_Logger->debug("Client disonnected from LocalCommunicationServer: {}", i.key().toStdString());
+                    m_Logger->debug("Client disonnected from LocalCommunicationServer: {}", (int)spdlog::sinks::FilterType::LocalCommunicationServer, i.key().toStdString());
 					QLocalSocket* socket = i.value();
 					socket->deleteLater();
 					m_SocketList->erase(i);
@@ -78,37 +80,37 @@ namespace RW{
 			switch (Error)
 			{
 			case QLocalSocket::ConnectionRefusedError:
-				m_Logger->error("A LocalCommunicationServer socket error occoured: {}", "ConnectionRefusedError");
+                m_Logger->error("A LocalCommunicationServer socket error occoured: {}", (int)spdlog::sinks::FilterType::LocalCommunicationServer, "ConnectionRefusedError");
 				break;
 			case QLocalSocket::PeerClosedError:
-				m_Logger->error("A LocalCommunicationServer socket error occoured: {}", "PeerClosedError");
+                m_Logger->error("A LocalCommunicationServer socket error occoured: {}", (int)spdlog::sinks::FilterType::LocalCommunicationServer, "PeerClosedError");
 				break;
 			case QLocalSocket::ServerNotFoundError:
-				m_Logger->error("A LocalCommunicationServer socket error occoured: {}", "ServerNotFoundError");
+                m_Logger->error("A LocalCommunicationServer socket error occoured: {}", (int)spdlog::sinks::FilterType::LocalCommunicationServer, "ServerNotFoundError");
 				break;
 			case QLocalSocket::SocketAccessError:
-				m_Logger->error("A LocalCommunicationServer socket error occoured: {}", "SocketAccessError");
+                m_Logger->error("A LocalCommunicationServer socket error occoured: {}", (int)spdlog::sinks::FilterType::LocalCommunicationServer, "SocketAccessError");
 				break;
 			case QLocalSocket::SocketResourceError:
-				m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", "SocketResourceError");
+                m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", (int)spdlog::sinks::FilterType::LocalCommunicationServer, "SocketResourceError");
 				break;
 			case QLocalSocket::SocketTimeoutError:
-				m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", "SocketTimeoutError");
+                m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", (int)spdlog::sinks::FilterType::LocalCommunicationServer, "SocketTimeoutError");
 				break;
 			case QLocalSocket::DatagramTooLargeError:
-				m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", "DatagramTooLargeError");
+                m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", (int)spdlog::sinks::FilterType::LocalCommunicationServer, "DatagramTooLargeError");
 				break;
 			case QLocalSocket::ConnectionError:
-				m_Logger->error("A LocalCommunicationServer socket error occoured: {}", "ConnectionError");
+                m_Logger->error("A LocalCommunicationServer socket error occoured: {}", (int)spdlog::sinks::FilterType::LocalCommunicationServer, "ConnectionError");
 				break;
 			case QLocalSocket::UnsupportedSocketOperationError:
-				m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", "UnsupportedSocketOperationError");
+                m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", (int)spdlog::sinks::FilterType::LocalCommunicationServer, "UnsupportedSocketOperationError");
 				break;
 			case QLocalSocket::UnknownSocketError:
-				m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", "UnknownSocketError");
+                m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", (int)spdlog::sinks::FilterType::LocalCommunicationServer, "UnknownSocketError");
 				break;
 			case QLocalSocket::OperationError:
-				m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", "OperationError");
+                m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", (int)spdlog::sinks::FilterType::LocalCommunicationServer, "OperationError");
 				break;
 			default:
 				break;
@@ -152,11 +154,29 @@ namespace RW{
 				return;
 			}
 
-			if (!m_SocketList->contains(msg.identifier()))
-				m_SocketList->insert(msg.identifier(), localSocket);
+            //Es werden nur Welcome Messages als Grund für eine Anmeldung akzeptiert
+            if (msg.MessageID() == COM::MessageDescription::EX_WELCOME)
+            {
+                if (m_SocketList->contains(msg.identifier()))
+                {
+                    m_Logger->trace("Delete Socket from list with identifier: {}", msg.identifier().toStdString());
+                    m_SocketList->remove(msg.identifier());
+                }
+                m_SocketList->insert(msg.identifier(), localSocket);
+                m_Logger->trace("Insert Socket from list with identifier: {}", msg.identifier().toStdString());
+                
+                if (msg.identifier() == Message::GenUUID(COM::TypeofServer::RemoteHiddenHelper).toString() && 
+                    msg.MessageID() == COM::MessageDescription::EX_WELCOME)
+                {
+                    m_Logger->trace("RemoteHiddenhelper connected");
+                    emit RemoteHiddenHelperConnected();
+                }
+            }
 
 			emit NewMessage(msg);
 		}
+
+
 
 
 	}

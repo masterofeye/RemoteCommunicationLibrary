@@ -2,7 +2,7 @@
 #include "stdafx.h"
 #include "qobject.h"
 #include "BasicCommunicationServer.h"
-#include <QUuid>
+#include "Message.h"
 
 namespace RW{
 	namespace COM{
@@ -13,16 +13,7 @@ namespace RW{
 			public BasicCommunicationServer
 		{
             Q_OBJECT
-        public:
-            enum class TypeofServer
-            {
-                RemoteView,
-                RemoteApp,
-                RemoteService,
-                RemoteHiddenHelper,
-                ServiceTest,
-                NON
-            };
+
 		private:
 			std::shared_ptr<spdlog::logger> m_Logger;
 			BasicCommunicationServer* m_LocalComObj;
@@ -39,12 +30,12 @@ namespace RW{
 			void Unregister(QObject* Client);
 			void UnregisterAll();
 			bool Listen() Q_DECL_OVERRIDE;
-            static QUuid GenUUID(TypeofServer ServerType);
 		public slots:
 			void OnPrepareIncomingConnection() Q_DECL_OVERRIDE;
 			void OnProcessMessage(Message Msg) Q_DECL_OVERRIDE;
 			void OnExternalMessage() Q_DECL_OVERRIDE;
 			void OnExternalMessage(Message Msg);
+            void OnRemoteHiddenHelperConnected();
 		signals:
 			void SendExtMessage(Message Msg);
 

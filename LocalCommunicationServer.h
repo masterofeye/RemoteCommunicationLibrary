@@ -42,6 +42,8 @@ namespace RW{
 			void LocalCommunicationServer::OnExternalMessage()  Q_DECL_OVERRIDE;
 
 			void OnProcessMessage(Message Msg) Q_DECL_OVERRIDE;
+        signals:
+            void RemoteHiddenHelperConnected();
 		};
 	}
 }

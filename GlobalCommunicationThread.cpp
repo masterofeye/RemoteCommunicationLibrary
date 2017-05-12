@@ -4,6 +4,7 @@
 #include <qdatastream>
 #include <qfile.h>
 #include <QDomDocument>
+#include "Types.h"
 
 
 #include <Wtsapi32.h>
@@ -52,7 +53,7 @@ namespace RW{
 				connect(m_Socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(OnSocketError(QAbstractSocket::SocketError)));
 
 				// We'll have multiple clients, we want to know which is which
-				m_Logger->debug("Client connected to GlobalServer {}",m_Socket->localAddress().toString().toStdString());
+                m_Logger->debug("Client connected to GlobalServer {}", (int)spdlog::sinks::FilterType::GlobalCommunicationThread, m_Socket->localAddress().toString().toStdString());
 
 				// make this thread a loop,
 				// thread will stay alive so that signal/slot to function properly
@@ -69,17 +70,17 @@ namespace RW{
 				dataStream << Msg;
 				quint64 size = m_Socket->write(arr);
 				if (size < arr.size())
-					m_Logger->warn("Uncomplete message was send to {}", Msg.identifier().toStdString());
+                    m_Logger->warn("Uncomplete message was send to {}", (int)spdlog::sinks::FilterType::GlobalCommunicationThread, Msg.identifier().toStdString());
 
 				if (!m_Socket->flush())
-					m_Logger->error("Message couldn't send to {}", Msg.identifier().toStdString());
+                    m_Logger->error("Message couldn't send to {}", (int)spdlog::sinks::FilterType::GlobalCommunicationThread, Msg.identifier().toStdString());
 			}
 
 			void GlobalCommunicationThread::OnExternalMessage()
 			{
 				if (m_Socket->bytesAvailable() <= 0)
 				{
-					m_Logger->warn("TcpSocket don't have any data received but was triggered.");
+                    m_Logger->warn("TcpSocket don't have any data received but was triggered.", (int)spdlog::sinks::FilterType::GlobalCommunicationThread);
 					return;
 				}
 
@@ -89,7 +90,7 @@ namespace RW{
                     QString username;
                     if(!ReturnCurrentUser(username))
                     {
-                        m_Logger->error("Couldn't read the username from the system");
+                        m_Logger->error("Couldn't read the username from the system", (int)spdlog::sinks::FilterType::GlobalCommunicationThread);
                     }
                     
                     QString answer;
@@ -159,7 +160,7 @@ namespace RW{
                     }
                     catch (...)
                     {
-                        m_Logger->error("Error durring message processing");
+                        m_Logger->error("Error durring message processing", (int)spdlog::sinks::FilterType::GlobalCommunicationThread);
                     }
                 }
 			}
@@ -169,7 +170,7 @@ namespace RW{
 			{
 				QTcpSocket *socket = (QTcpSocket*)qobject_cast<QAbstractSocket*>(sender());
 				if (socket) {
-					m_Logger->debug("Client {} disconnected from the server.", socket->peerAddress().toString().toStdString());
+                    m_Logger->debug("Client {} disconnected from the server.", (int)spdlog::sinks::FilterType::GlobalCommunicationThread, socket->peerAddress().toString().toStdString());
 					socket->deleteLater();
 				}
 			}
@@ -179,73 +180,73 @@ namespace RW{
 				switch (socketError)
 				{
 				case QAbstractSocket::ConnectionRefusedError:
-					m_Logger->error("A GlobalCommunicationClient socket error occoured: {}", "ConnectionRefusedError");
+                    m_Logger->error("A GlobalCommunicationClient socket error occoured: {}", (int)spdlog::sinks::FilterType::GlobalCommunicationThread, "ConnectionRefusedError");
 					break;
 				case QAbstractSocket::AddressInUseError:
-					m_Logger->error("A GlobalCommunicationClient socket error occoured: {}", "AddressInUseError");
+                    m_Logger->error("A GlobalCommunicationClient socket error occoured: {}", (int)spdlog::sinks::FilterType::GlobalCommunicationThread, "AddressInUseError");
 					break;
 				case QAbstractSocket::TemporaryError:
-					m_Logger->error("A GlobalCommunicationClient socket error occoured: {}", "ServerNotFoundError");
+                    m_Logger->error("A GlobalCommunicationClient socket error occoured: {}", (int)spdlog::sinks::FilterType::GlobalCommunicationThread, "ServerNotFoundError");
 					break;
 				case QAbstractSocket::SocketAccessError:
-					m_Logger->error("A GlobalCommunicationClient socket error occoured: {}", "SocketAccessError");
+                    m_Logger->error("A GlobalCommunicationClient socket error occoured: {}", (int)spdlog::sinks::FilterType::GlobalCommunicationThread, "SocketAccessError");
 					break;
 				case QAbstractSocket::SocketResourceError:
-					m_Logger->error("A GlobalCommunicationClient socket error occoured:  {}", "SocketResourceError");
+                    m_Logger->error("A GlobalCommunicationClient socket error occoured:  {}", (int)spdlog::sinks::FilterType::GlobalCommunicationThread, "SocketResourceError");
 					break;
 				case QAbstractSocket::SocketTimeoutError:
-					m_Logger->error("A GlobalCommunicationClient socket error occoured:  {}", "SocketTimeoutError");
+                    m_Logger->error("A GlobalCommunicationClient socket error occoured:  {}", (int)spdlog::sinks::FilterType::GlobalCommunicationThread, "SocketTimeoutError");
 					break;
 				case QAbstractSocket::DatagramTooLargeError:
-					m_Logger->error("A GlobalCommunicationClient socket error occoured:  {}", "DatagramTooLargeError");
+                    m_Logger->error("A GlobalCommunicationClient socket error occoured:  {}", (int)spdlog::sinks::FilterType::GlobalCommunicationThread, "DatagramTooLargeError");
 					break;
 				case QAbstractSocket::UnsupportedSocketOperationError:
-					m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", "UnsupportedSocketOperationError");
+                    m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", (int)spdlog::sinks::FilterType::GlobalCommunicationThread, "UnsupportedSocketOperationError");
 					break;
 				case QAbstractSocket::UnknownSocketError:
-					m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", "UnknownSocketError");
+                    m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", (int)spdlog::sinks::FilterType::GlobalCommunicationThread, "UnknownSocketError");
 					break;
 				case QAbstractSocket::OperationError:
-					m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", "OperationError");
+                    m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", (int)spdlog::sinks::FilterType::GlobalCommunicationThread, "OperationError");
 					break;
 				case QAbstractSocket::UnfinishedSocketOperationError:
-					m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", "UnfinishedSocketOperationError");
+                    m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", (int)spdlog::sinks::FilterType::GlobalCommunicationThread, "UnfinishedSocketOperationError");
 					break;
 				case QAbstractSocket::NetworkError:
-					m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", "NetworkError");
+                    m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", (int)spdlog::sinks::FilterType::GlobalCommunicationThread, "NetworkError");
 					break;
 				case QAbstractSocket::HostNotFoundError:
-					m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", "HostNotFoundError");
+                    m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", (int)spdlog::sinks::FilterType::GlobalCommunicationThread, "HostNotFoundError");
 					break;
 				case QAbstractSocket::RemoteHostClosedError:
-					m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", "RemoteHostClosedError");
+                    m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", (int)spdlog::sinks::FilterType::GlobalCommunicationThread, "RemoteHostClosedError");
 					break;
 				case QAbstractSocket::ProxyAuthenticationRequiredError:
-					m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", "ProxyAuthenticationRequiredError");
+                    m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", (int)spdlog::sinks::FilterType::GlobalCommunicationThread, "ProxyAuthenticationRequiredError");
 					break;
 				case QAbstractSocket::SslHandshakeFailedError:
-					m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", "SslHandshakeFailedError");
+                    m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", (int)spdlog::sinks::FilterType::GlobalCommunicationThread, "SslHandshakeFailedError");
 					break;
 				case QAbstractSocket::ProxyConnectionRefusedError:
-					m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", "UnfinishedSocketOperationError");
+                    m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", (int)spdlog::sinks::FilterType::GlobalCommunicationThread, "UnfinishedSocketOperationError");
 					break;
 				case QAbstractSocket::ProxyConnectionClosedError:
-					m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", "ProxyConnectionClosedError");
+                    m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", (int)spdlog::sinks::FilterType::GlobalCommunicationThread, "ProxyConnectionClosedError");
 					break;
 				case QAbstractSocket::ProxyConnectionTimeoutError:
-					m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", "ProxyConnectionTimeoutError");
+                    m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", (int)spdlog::sinks::FilterType::GlobalCommunicationThread, "ProxyConnectionTimeoutError");
 					break;
 				case QAbstractSocket::ProxyNotFoundError:
-					m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", "ProxyNotFoundError");
+                    m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", (int)spdlog::sinks::FilterType::GlobalCommunicationThread, "ProxyNotFoundError");
 					break;
 				case QAbstractSocket::ProxyProtocolError:
-					m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", "ProxyProtocolError");
+                    m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", (int)spdlog::sinks::FilterType::GlobalCommunicationThread, "ProxyProtocolError");
 					break;
 				case QAbstractSocket::SslInternalError:
-					m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", "SslInternalError");
+                    m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", (int)spdlog::sinks::FilterType::GlobalCommunicationThread, "SslInternalError");
 					break;
 				case QAbstractSocket::SslInvalidUserDataError:
-					m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", "SslInvalidUserDataError");
+                    m_Logger->error("A LocalCommunicationServer socket error occoured:  {}", (int)spdlog::sinks::FilterType::GlobalCommunicationThread, "SslInvalidUserDataError");
 					break;
 				default:
 					break;
