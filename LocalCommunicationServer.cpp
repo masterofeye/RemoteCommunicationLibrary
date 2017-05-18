@@ -24,6 +24,8 @@ namespace RW{
 
 		LocalCommunicationServer::~LocalCommunicationServer()
 		{
+            m_Logger->trace("LocalCommunicationServer ~LocalCommunicationServer", (int)spdlog::sinks::FilterType::LocalCommunicationServer);
+            m_Logger->flush();
 			m_LocalComObj->close();
 			qDeleteAll(*m_SocketList);
 			delete m_SocketList;
@@ -61,6 +63,8 @@ namespace RW{
 
 		void LocalCommunicationServer::OnDisconnect()
 		{
+            m_Logger->trace("LocalCommunicationServer OnDisconnect", (int)spdlog::sinks::FilterType::LocalCommunicationServer);
+            m_Logger->flush();
 			QLocalSocket* LocalSocket = (QLocalSocket *)sender();
 
 			for (auto i = m_SocketList->begin(); i != m_SocketList->end(); ++i)
@@ -122,7 +126,7 @@ namespace RW{
 		{
             if (!m_SocketList->contains(Msg.identifier()))
             {
-                m_Logger->error("Couldn't find Client with ID {}", Msg.identifier().toStdString());
+                m_Logger->error("Couldn't find Client with ID {} for message {}", Msg.identifier().toStdString(), (int)Msg.MessageID());
                 return;
             }
 

@@ -38,12 +38,14 @@ namespace RW{
             QDataStream dataStream(&arr, QIODevice::OpenModeFlag::WriteOnly);
             dataStream << Msg;
             quint64 size = m_Client->write(arr);
+            m_Logger->trace("LocalCommunicationClient::OnProcessMessage {}",(int)spdlog::sinks::FilterType::LocalCommunicationClient, (int)Msg.MessageID());
+
             if (size < arr.size())
                 m_Logger->warn("Uncomplete message was send to {}", (int)spdlog::sinks::FilterType::LocalCommunicationClient, Msg.identifier().toStdString());
 
             if (!m_Client->flush())
                 m_Logger->error("Message couldn't send to {}", (int)spdlog::sinks::FilterType::LocalCommunicationClient, Msg.identifier().toStdString());
-
+            m_Logger->flush();
         }
 
         void LocalCommunicationClient::OnPrepareIncomingConnection()

@@ -223,6 +223,7 @@ namespace RW{
 
         void CommunicatonServer::OnRemoteHiddenHelperConnected()
         {
+            m_Logger->trace("CommunicatonServer::OnRemoteHiddenHelperConnected", (int)spdlog::sinks::FilterType::CommunicatonServer);
             Message msg;
             msg.SetMessageID(COM::MessageDescription::IN_StartInactivityObserver);
             msg.SetIsProcessed(false);
