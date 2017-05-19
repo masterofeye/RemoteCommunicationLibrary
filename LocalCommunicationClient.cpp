@@ -64,7 +64,7 @@ namespace RW{
             Message msg;
             QDataStream sizeStream(m_Client->readAll());
             sizeStream >> msg;
-            m_Logger->warn("Message was received {}", (int)spdlog::sinks::FilterType::LocalCommunicationClient, (int)msg.MessageID());
+            m_Logger->trace("Message was received {}", (int)spdlog::sinks::FilterType::LocalCommunicationClient, (int)msg.MessageID());
             emit NewMessage(msg);
         }
 
