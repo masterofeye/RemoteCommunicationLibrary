@@ -53,8 +53,6 @@ public:
                 IN_Notifier,
                 EX_ShowPopUp,
                 EX_ShowPopUpWithTimeout,
-				IN_PowerSupply,
-				IN_PowerStripe,
                 IN_StartInactivityObserver,
                 IN_StopInactivityObserver,
                 IN_StopShutdownHandler,

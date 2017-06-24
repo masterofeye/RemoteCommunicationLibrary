@@ -123,7 +123,7 @@ namespace RW{
         void LocalCommunicationClient::SendWelcome()
         {
             COM::Message msg;
-            QString uuid = COM::Message::GenUUID(COM::TypeofServer::RemoteHiddenHelper).toString();
+            QString uuid = COM::Message::GenUUID(m_ServerType).toString();
             msg.setIdentifier(uuid);
             msg.SetMessageID(COM::MessageDescription::EX_WELCOME);
             msg.SetIsExternal(false);

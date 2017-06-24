@@ -28,6 +28,8 @@ namespace RW{
             else
             {
                 m_LocalComObj = new LocalCommunicationClient("Server", Logger, this);
+                //Todo Ein wenig dirty, könnte man noch besser machen
+                ((LocalCommunicationClient*)m_LocalComObj)->SetTypeOfServer(ServerType);
                 m_GlobalComObj = new GlobalCommunicationClient(42364, Logger, this);
             }
 
@@ -191,6 +193,8 @@ namespace RW{
                 return;
             if (qobject_cast<GlobalCommunicationClient*>(obj) != nullptr)
                 return;
+
+            m_Logger->debug("OnProcessMessage: {}", (int)spdlog::sinks::FilterType::CommunicatonServer, (int)Msg.MessageID());
 
             if (Msg.IsExternal())
             {
