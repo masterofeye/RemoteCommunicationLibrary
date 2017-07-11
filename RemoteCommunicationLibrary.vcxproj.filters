@@ -116,9 +116,6 @@
     <ClCompile Include="GeneratedFiles\Debug\moc_MessageDescription.cpp">
       <Filter>Generierte Dateien\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_MessageDescription.cpp">
-      <Filter>Generierte Dateien\Release</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="BasicCommunicationServer.h">
@@ -142,9 +139,6 @@
     <CustomBuild Include="GlobalCommunicationThread.h">
       <Filter>Header Dateien</Filter>
     </CustomBuild>
-    <CustomBuild Include="MessageDescription.h">
-      <Filter>Header Dateien</Filter>
-    </CustomBuild>
     <CustomBuild Include="Message.h">
       <Filter>Header Dateien</Filter>
     </CustomBuild>
@@ -154,10 +148,21 @@
     <CustomBuild Include="LocalCommunicationClient.h">
       <Filter>Header Dateien</Filter>
     </CustomBuild>
+    <CustomBuild Include="stdafx.h">
+      <Filter>Header Dateien</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stdafx.h">
+    <ClInclude Include="MessageDescription.h">
       <Filter>Header Dateien</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Header Dateien</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="RemoteCommunicationLibrary.rc">
+      <Filter>Resource Dateien</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>
