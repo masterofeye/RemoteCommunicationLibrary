@@ -194,7 +194,8 @@ namespace RW{
             if (qobject_cast<GlobalCommunicationClient*>(obj) != nullptr)
                 return;
 
-            m_Logger->debug("OnProcessMessage: {}", (int)spdlog::sinks::FilterType::CommunicatonServer, (int)Msg.MessageID());
+            QMetaEnum metaEnum = QMetaEnum::fromType < RW::COM::MessageDescription > ();
+            m_Logger->debug("OnProcessMessage: {}", (int)spdlog::sinks::FilterType::CommunicatonServer, metaEnum.valueToKey((int)Msg.MessageID()));
 
             if (Msg.IsExternal())
             {
@@ -228,11 +229,18 @@ namespace RW{
         void CommunicatonServer::OnRemoteHiddenHelperConnected()
         {
             m_Logger->trace("CommunicatonServer::OnRemoteHiddenHelperConnected", (int)spdlog::sinks::FilterType::CommunicatonServer);
-            Message msg;
-            msg.SetMessageID(COM::MessageDescription::IN_StartInactivityObserver);
-            msg.SetIsProcessed(false);
+            Message startInactivityMessage;
+            startInactivityMessage.SetMessageID(COM::MessageDescription::IN_StartInactivityObserver);
+            startInactivityMessage.SetIsProcessed(false);
+            emit NewMessage(startInactivityMessage);
 
-            emit NewMessage(msg);
+            //Ein User hat sich angemeldet oder der RemoteHiddenhelper wurde erneut gestartet. 
+            //Wir müssen sicher gehen, das keine ShutdownHandler mehr aktiv ist. 
+            Message stopShutdownHandlerMessage;
+            stopShutdownHandlerMessage.SetMessageID(COM::MessageDescription::IN_StopShutdownHandler);
+            stopShutdownHandlerMessage.SetIsProcessed(false);
+            emit NewMessage(stopShutdownHandlerMessage);
+
         }
 	}
 }
