@@ -1,19 +1,11 @@
 #pragma once
 
-#include <qobject.h>
-//#include <QMetaType>
+#include <QObject>
+#include "remotecommunicationlibrary_global.h"
 namespace RW{
+    namespace COM{
+        REMOTECOMMUNICATIONLIBRARY_EXPORT Q_NAMESPACE
 
-
-#ifndef Q_MOC_RUN
-	namespace COM{
-        extern const QMetaObject staticMetaObject;
-#else
-		class COM
-		{
-            Q_GADGET
-public:
-#endif
 			enum class MessageDescription
 			{
 				EX_CanEasyStartApplication,
@@ -73,11 +65,7 @@ public:
                 EX_WELCOME,
 				Amount
 			};
-
-
-#ifdef Q_MOC_RUN
-			Q_ENUM(MessageDescription)
-#endif
+            Q_ENUM_NS(MessageDescription)
 
 			enum class ErrorDecscription
 			{
@@ -138,20 +126,17 @@ public:
                 ErrorLogOutNotPossible,
                 ErrorLogOutQuerySessionFailed,
 			};
-#ifdef Q_MOC_RUN
-			Q_ENUM(ErrorDecscription)
-#endif
-#ifdef Q_MOC_RUN
-		};
-#endif
+
+            Q_ENUM_NS(ErrorDecscription)
+
 			enum class IdentifierFlag
 			{
 				RemoteService,
 				RemoteApp,
 				RemoteView
 			};
-
-	}
+            Q_ENUM_NS(IdentifierFlag)
+    }
 
 }
 Q_DECLARE_METATYPE(RW::COM::MessageDescription);
