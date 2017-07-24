@@ -161,8 +161,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="RemoteCommunicationLibrary.rc">
-      <Filter>Resource Dateien</Filter>
-    </ResourceCompile>
+    <ResourceCompile Include="RemoteCommunicationLibrary.rc" />
   </ItemGroup>
 </Project>

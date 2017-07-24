@@ -91,6 +91,9 @@ xcopy /y $(SolutionDir)$(Platform)\$(Configuration)\$(TargetName).dll ..\..\Remo
 xcopy /y $(SolutionDir)$(Platform)\$(Configuration)\$(TargetName).dll ..\..\RemoteHiddenHelper\build\$(Platform)\$(Configuration)\
 </Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>python RemoteCommunicationLibraryInstaller\versionincrement.py</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="BasicCommunicationServer.cpp" />
