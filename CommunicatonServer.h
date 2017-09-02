@@ -30,6 +30,8 @@ namespace RW{
 			void Unregister(QObject* Client);
 			void UnregisterAll();
 			bool Listen() Q_DECL_OVERRIDE;
+            bool ListenJustGlobal();
+            bool ListenJustLocal();
 		public slots:
 			void OnPrepareIncomingConnection() Q_DECL_OVERRIDE;
 			void OnProcessMessage(Message Msg) Q_DECL_OVERRIDE;

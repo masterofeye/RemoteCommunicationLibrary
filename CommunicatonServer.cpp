@@ -77,6 +77,25 @@ namespace RW{
             return true;
         }
 
+        bool CommunicatonServer::ListenJustLocal()
+        {
+            if (!m_LocalComObj->Listen())
+            {
+                return false;
+            }
+            return true;
+        }
+
+
+        bool CommunicatonServer::ListenJustGlobal()
+        {
+            if (!m_GlobalComObj->Listen())
+            {
+                return false;
+            }
+            return true;
+        }
+
         void CommunicatonServer::Register(QObject* Client)
         {
             if (Client == nullptr)

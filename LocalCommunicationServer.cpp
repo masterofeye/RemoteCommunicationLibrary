@@ -124,9 +124,10 @@ namespace RW{
 
 		void LocalCommunicationServer::OnProcessMessage(Message Msg)
 		{
+            QMetaEnum metaEnum = QMetaEnum::fromType < RW::COM::MessageDescription >();
             if (!m_SocketList->contains(Msg.identifier()))
             {
-                m_Logger->error("Couldn't find Client with ID {} for message {}", Msg.identifier().toStdString(), (int)Msg.MessageID());
+                m_Logger->error("Couldn't find Client with ID {} for message {}", (int)spdlog::sinks::FilterType::LocalCommunicationServer, Msg.identifier().toStdString(), metaEnum.valueToKey((int)Msg.MessageID()));
                 return;
             }
 

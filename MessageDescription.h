@@ -63,6 +63,12 @@ namespace RW{
                 IN_POWERSUPPLY,
                 IN_HARDWARE_STOP,
                 EX_WELCOME,
+                IN_SESSIONSTARTSERVER,
+                IN_SESSIONCONNECT,
+                IN_SESSIONDISCONNECT,
+                IN_SESSIONLOGON,
+                IN_SESSIONLOGOFF,
+                IN_SESSIONSHUTDOWN,
 				Amount
 			};
             Q_ENUM_NS(MessageDescription)
