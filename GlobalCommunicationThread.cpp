@@ -5,7 +5,7 @@
 #include <qfile.h>
 #include <QDomDocument>
 #include "Types.h"
-
+#include "qmetaobject.h"
 
 #include <Wtsapi32.h>
 #include <userenv.h>
@@ -53,7 +53,7 @@ namespace RW{
 				connect(m_Socket, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(OnSocketError(QAbstractSocket::SocketError)));
 
 				// We'll have multiple clients, we want to know which is which
-                m_Logger->debug("Client connected to GlobalServer {}", (int)spdlog::sinks::FilterType::GlobalCommunicationThread, m_Socket->localAddress().toString().toStdString());
+                m_Logger->trace("Client connected to GlobalServer {}", (int)spdlog::sinks::FilterType::GlobalCommunicationThread, m_Socket->localAddress().toString().toStdString());
 
 				// make this thread a loop,
 				// thread will stay alive so that signal/slot to function properly
@@ -67,13 +67,14 @@ namespace RW{
 			{
 				QByteArray arr;
 				QDataStream dataStream(&arr, QIODevice::OpenModeFlag::WriteOnly);
+                QMetaEnum metaEnum = QMetaEnum::fromType < RW::COM::MessageDescription >();
 				dataStream << Msg;
 				quint64 size = m_Socket->write(arr);
 				if (size < arr.size())
                     m_Logger->warn("Uncomplete message was send to {}", (int)spdlog::sinks::FilterType::GlobalCommunicationThread, Msg.identifier().toStdString());
 
 				if (!m_Socket->flush())
-                    m_Logger->error("Message couldn't send to {}", (int)spdlog::sinks::FilterType::GlobalCommunicationThread, Msg.identifier().toStdString());
+                    m_Logger->error("Message {} couldn't send to {}", (int)spdlog::sinks::FilterType::GlobalCommunicationThread, metaEnum.valueToKey((int)Msg.MessageID()), Msg.identifier().toStdString());
 			}
 
 			void GlobalCommunicationThread::OnExternalMessage()
@@ -170,7 +171,7 @@ namespace RW{
 			{
 				QTcpSocket *socket = (QTcpSocket*)qobject_cast<QAbstractSocket*>(sender());
 				if (socket) {
-                    m_Logger->debug("Client {} disconnected from the server.", (int)spdlog::sinks::FilterType::GlobalCommunicationThread, socket->peerAddress().toString().toStdString());
+                    m_Logger->trace("Client {} disconnected from the server.", (int)spdlog::sinks::FilterType::GlobalCommunicationThread, socket->peerAddress().toString().toStdString());
 					socket->deleteLater();
 				}
 			}

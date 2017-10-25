@@ -34,6 +34,9 @@ namespace RW{
 
 		bool LocalCommunicationServer::Listen()
 		{
+            if (m_LocalComObj->isListening())
+                return true;
+
 			if (m_LocalComObj->listen(m_ServerName))
 			{
                 m_Logger->debug("LocalCommunicationServer is started on ChannelName {}", (int)spdlog::sinks::FilterType::LocalCommunicationServer, m_ServerName.toStdString());
@@ -53,7 +56,7 @@ namespace RW{
 
 			if (socket->isValid())
 			{
-                m_Logger->debug("A new client is connected to the LocalCommunicationServer: {}", (int)spdlog::sinks::FilterType::LocalCommunicationServer, socket->serverName().toStdString());
+                m_Logger->trace("A new client is connected to the LocalCommunicationServer: {}", (int)spdlog::sinks::FilterType::LocalCommunicationServer, socket->serverName().toStdString());
 
 				connect(socket, SIGNAL(disconnected()), this, SLOT(OnSocketDisconnected()));
 				connect(socket, SIGNAL(readyRead()), this, SLOT(OnExternalMessage()));
@@ -140,7 +143,7 @@ namespace RW{
 				m_Logger->warn("Uncomplete message was send to {}", Msg.identifier().toStdString());
 
 			if (!localSocket->flush())
-				m_Logger->error("Message couldn't send to {}", Msg.identifier().toStdString());
+                m_Logger->error("Message {} couldn't send to {}", metaEnum.valueToKey((int)Msg.MessageID()), Msg.identifier().toStdString() );
 		}
 
 		void LocalCommunicationServer::OnExternalMessage()

@@ -17,10 +17,13 @@ namespace RW{
 
 		GlobalCommunicationServer::~GlobalCommunicationServer()
 		{
+            m_TcpServer->close();
 		}
 
 		bool GlobalCommunicationServer::Listen()
 		{
+            if (m_TcpServer->isListening())
+                return true;
 			if (!m_TcpServer->listen(QHostAddress::Any, m_Port))
 			{
                 m_Logger->error("TcpServer couldn't listen on port {}. ErrorString: {}, ErrorID: {}", (int)spdlog::sinks::FilterType::GlobalCommunicationServer, m_Port, m_TcpServer->errorString().toStdString(), (qint8)m_TcpServer->serverError());

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "Message.h"
 #include <QDatastream>
+#include "RemoteDataConnectLibrary.h"
 
 namespace RW{
 	namespace COM{
@@ -134,6 +135,8 @@ namespace RW{
 			out.commitTransaction();
 			return out;
 		}
+
+
 
 		QDataStream &operator >>(QDataStream &in, RW::COM::Message &dataStruct)
 		{

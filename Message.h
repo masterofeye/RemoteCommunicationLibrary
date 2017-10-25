@@ -6,6 +6,7 @@
 #include <QUuid>
 
 namespace RW{
+    enum class WorkstationKind;
 	namespace COM{
         enum class TypeofServer
         {

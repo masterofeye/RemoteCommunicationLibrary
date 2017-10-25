@@ -6,23 +6,26 @@
 #include "Message.h"
 //TODO Könnte man eleganter gestalten
 #include "Types.h"
-
 #include <QMetaobject>
 #include <QMetaMethod>
 
-
 namespace RW{
     namespace COM{
+
+
+
         CommunicatonServer::CommunicatonServer(bool IsServer, TypeofServer ServerType, QString LocalServerName, quint16 Port, std::shared_ptr<spdlog::logger> Logger, QObject* Parent) : BasicCommunicationServer(Parent),
             m_ReceiverList(new QList<QObject*>()),
             m_Logger(Logger),
             m_IsServer(IsServer),
             m_TypeofServer(ServerType)
         {
+
             if (IsServer)
             {
                 m_LocalComObj = new LocalCommunicationServer("Server", Logger, this);
                 m_GlobalComObj = new GlobalCommunicationServer(42364, Logger, this);
+                //TODO das hat hier eigentlich nichts zu suchen, da es viel zu spezifisch ist
                 QObject::connect((LocalCommunicationServer*)m_LocalComObj, &LocalCommunicationServer::RemoteHiddenHelperConnected, this, &CommunicatonServer::OnRemoteHiddenHelperConnected);
             }
             else

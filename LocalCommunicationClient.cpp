@@ -3,6 +3,7 @@
 #include "CommunicatonServer.h"
 //TODO Könnte man eleganter gestalten
 #include "Types.h"
+#include "qmetaobject.h"
 
 #include <qdatastream.h>
 
@@ -35,6 +36,7 @@ namespace RW{
         void LocalCommunicationClient::OnProcessMessage(Message Msg)
         {
             QByteArray arr;
+            
             QDataStream dataStream(&arr, QIODevice::OpenModeFlag::WriteOnly);
             dataStream << Msg;
             quint64 size = m_Client->write(arr);
@@ -43,8 +45,11 @@ namespace RW{
             if (size < arr.size())
                 m_Logger->warn("Uncomplete message was send to {}", (int)spdlog::sinks::FilterType::LocalCommunicationClient, Msg.identifier().toStdString());
 
-            if (!m_Client->flush())
-                m_Logger->error("Message couldn't send to {}", (int)spdlog::sinks::FilterType::LocalCommunicationClient, Msg.identifier().toStdString());
+            //if (!m_Client->flush())
+            //{
+            //    QMetaEnum metaEnum = QMetaEnum::fromType < RW::COM::MessageDescription >();
+            //    m_Logger->error("Message {} couldn't send to {}", (int)spdlog::sinks::FilterType::LocalCommunicationClient, metaEnum.valueToKey((int)Msg.MessageID()), Msg.identifier().toStdString());
+            //}
             m_Logger->flush();
         }
 

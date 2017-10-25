@@ -69,6 +69,13 @@ namespace RW{
                 IN_SESSIONLOGON,
                 IN_SESSIONLOGOFF,
                 IN_SESSIONSHUTDOWN,
+                IN_USB_SWITCH_ON,
+                IN_USB_SWITCH_OFF,
+                IN_USB_SWITCH_RESET,
+                IN_REMOTEBOX_ON,
+                IN_REMOTEBOX_OFF,
+                IN_REMOTEBOX_RESET,
+                EX_PermanentLogin,
 				Amount
 			};
             Q_ENUM_NS(MessageDescription)
